@@ -96,7 +96,7 @@ steps:
 - task: WhiteSource Bolt@19
   displayName: 'Run WhiteSource Bolt'
 
-- task: DotNetCoreCLI@2
+- task: NuGetCommand@2
   displayName: 'Pack the project - $(buildConfiguration)'
   inputs:
     command: 'pack'
