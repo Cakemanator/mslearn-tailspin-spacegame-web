@@ -46,7 +46,7 @@ steps:
     extraProperties: |
      sonar.cs.opencover.reportsPaths=$(Build.SourcesDirectory)/TestResults/Coverage/coverage.opencover.xml
      sonar.exclusions=**/wwwroot/lib/**/*
-    condition: and(succeeded(),eq(variables['Build.Reason'], 'PullRequest'),eq(variables['System.PullRequest.TargetBranch'], 'master'))
+  condition: and(succeeded(),eq(variables['Build.Reason'], 'PullRequest'),eq(variables['System.PullRequest.TargetBranch'], 'master'))
 
 - task: DotNetCoreCLI@2
   displayName: 'Build the project - $(buildConfiguration)'
@@ -92,6 +92,28 @@ steps:
     publishWebProjects: false
     arguments: '--no-build --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/$(buildConfiguration)'
     zipAfterPublish: true
+
+- task: WhiteSource Bolt@19
+  displayName: 'Run WhiteSource Bolt'
+
+- task: DotNetCoreCLI@2
+  displayName: 'Pack the project - $(buildConfiguration)'
+  inputs:
+    command: 'pack'
+    projects: '**/*.csproj'
+    arguments: '--no-build --configuration $(buildConfiguration)'
+    versioningScheme: byPrereleaseNumber
+    majorVersion: '1'
+    minorVersion: '0'
+    patchVersion: '0'
+
+- task: NuGetCommand@2
+  displayName: 'Publish NuGet package'
+  inputs:
+    command: push
+    publishVstsFeed: 'Tailspin.SpaceGame.Web.Models'
+    allowPackageConflicts: true
+  condition: succeeded()
 
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Artifact: drop'
