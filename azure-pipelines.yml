@@ -112,6 +112,7 @@ steps:
   inputs:
     command: push
     publishVstsFeed: 'Tailspin.SpaceGame.Web.Models'
+    apikey: 'AzureDevOps'
     allowPackageConflicts: true
   condition: succeeded()
 
